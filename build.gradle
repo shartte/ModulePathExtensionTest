@@ -34,9 +34,8 @@ def copy = tasks.register("copy", Copy) {
     into(file("build/libs"))
 }
 
-assemble.dependsOn copy
-
 jar {
+    dependsOn copy
     manifest {
         attributes(
                 "Automatic-Module-Name": "mpextensiontest",
