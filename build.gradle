@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    maven { url = "https://maven.neoforged.net/releases/" }
+}
+
+configurations {
+    deps {
+        extendsFrom implementation
+    }
+}
+
+dependencies {
+    implementation("net.neoforged:JarJarFileSystems:0.4.1")
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(9)
+    }
+}
+
+tasks.register("run", JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "net.neoforged.mpextension.startup.MpExtensionTest"
+    jvmArgs("-javaagent:" + jar.archivePath)
+}
+
+tasks.register("copy", Copy) {
+    from(configurations.deps)
+    into(file("build/libs"))
+}
+
+assemble.dependsOn copy
+
+jar {
+    manifest {
+        attributes(
+                "Automatic-Module-Name": "mpextensiontest",
+                "Main-Class": "net.neoforged.mpextension.startup.MpExtensionTest",
+                "Launcher-Agent-Class": "net.neoforged.mpextension.startup.MpAgent",
+                "Premain-Class": "net.neoforged.mpextension.startup.MpAgent",
+                "Class-Path": configurations.deps.files.collect { it.name }.join(" ")
+        )
+    }
+}
