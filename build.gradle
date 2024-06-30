@@ -29,7 +29,7 @@ tasks.register("run", JavaExec) {
     jvmArgs("-javaagent:" + jar.archivePath)
 }
 
-tasks.register("copy", Copy) {
+def copy = tasks.register("copy", Copy) {
     from(configurations.deps)
     into(file("build/libs"))
 }
@@ -45,5 +45,21 @@ jar {
                 "Premain-Class": "net.neoforged.mpextension.startup.MpAgent",
                 "Class-Path": configurations.deps.files.collect { it.name }.join(" ")
         )
+    }
+}
+
+for (var i = 9; i <= 22; i++) {
+    var javaVersion = JavaLanguageVersion.of(i)
+    def testTask = tasks.register("testOnJava" + i, JavaExec) {
+        group = "verification"
+        classpath = files(jar)
+        mainClass = "net.neoforged.mpextension.startup.MpExtensionTest"
+        javaLauncher = javaToolchains.launcherFor {
+            languageVersion = javaVersion
+        }
+        jvmArgs("-javaagent:" + jar.archivePath)
+    }
+    tasks.named("check").configure {
+        it.dependsOn testTask
     }
 }

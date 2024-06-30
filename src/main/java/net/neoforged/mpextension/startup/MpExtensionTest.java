@@ -26,6 +26,7 @@ import java.util.jar.Manifest;
 
 public class MpExtensionTest {
     public static void main(String[] args) throws Exception {
+        System.out.println("Java Version: " + System.getProperty("java.version"));
         System.out.println("MpExtensionTest: " + MpExtensionTest.class.getModule());
         System.out.println("MpExtensionTest: " + MpExtensionTest.class.getClassLoader());
 
